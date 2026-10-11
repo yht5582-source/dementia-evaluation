@@ -10,7 +10,8 @@ DG.sources = [
  ['PPA：原發性進行性失語症分類（2011）','https://pubmed.ncbi.nlm.nih.gov/21325651/','語言主導症候群不等同特定病理；網站不判定 PPA 亞型。'],
  ['日本常壓性水腦症學會：第三版指引（2021）','https://pubmed.ncbi.nlm.nih.gov/33455998/','步態、認知、排尿與影像的整合；三徵不足以確診。'],
  ['Lancet 失智症委員會報告（2024）','https://doi.org/10.1016/S0140-6736(24)01296-0','十四項危險因子；約 45% 是人口可歸因比例，非個人風險。'],
- ['Alzheimer’s Association：血液生物標記指引（2025）','https://doi.org/10.1002/alz.70535','有客觀認知障礙者於專科使用；須依檢測效能及臨床情境解讀。']
+ ['Alzheimer’s Association：血液生物標記指引（2025）','https://doi.org/10.1002/alz.70535','有客觀認知障礙者於專科使用；須依檢測效能及臨床情境解讀。'],
+ ['AAN 失智症診斷實務參數（2001）','https://doi.org/10.1212/wnl.56.9.1143','建議結構性腦影像，並篩檢憂鬱、維生素 B12 缺乏與甲狀腺功能低下；梅毒僅在臨床懷疑時檢查。']
 ];
 const q=(id,label,hint='',clinical=false)=>({id,label,hint,clinical});
 DG.sections = {
@@ -34,3 +35,13 @@ DG.risks=[
  ['pollution','空氣污染','晚年','依當地空氣品質調整暴露與戶外活動；也需環境與公共政策介入。'],
  ['vision','未治療的視力損失','晚年','安排眼科及視力評估、適當治療／矯正與居家環境調整。','2024 新增']
 ].map(([id,name,stage,action,badge])=>({id,name,stage,action,badge}));
+/* 可逆／共存因素檢查（醫療人員模式）：NICE NG97 1.2.2、1.2.13；AAN 2001。項目由醫師依情境決定，非固定套組。 */
+DG.workup=[
+ ['b12','維生素 B12（必要時含葉酸）',true,'AAN 2001 建議篩檢 B12 缺乏。',10],
+ ['thyroid','甲狀腺功能（TSH）',true,'AAN 2001 建議篩檢甲狀腺功能低下。',10],
+ ['metabolic','血糖／HbA1c、電解質、鈣、腎與肝功能',true,'NICE NG97 1.2.2：以適當血液與尿液檢查排除可逆原因。',1],
+ ['cbc','全血球計數（必要時 ESR／CRP）',true,'NICE NG97 1.2.2；依臨床情境選擇。',1],
+ ['imaging','結構性腦影像（CT 或 MRI）',true,'NICE NG97 1.2.13：除非失智已明確且亞型清楚，應安排以排除可逆原因並協助亞型判斷。',1],
+ ['urine','尿液檢查（疑譫妄或感染時）',false,'只在臨床懷疑時安排。',1],
+ ['syphilis','梅毒／HIV 血清（臨床懷疑或高風險時）',false,'AAN 2001：無臨床懷疑時不需常規梅毒篩檢。',10]
+].map(([id,name,core,note,source])=>({id,name,core,note,source}));

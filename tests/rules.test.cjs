@@ -4,7 +4,7 @@ vm.runInContext(fs.readFileSync('data.js','utf8').replace('window.DG = {};','var
 vm.runInContext(fs.readFileSync('engine.js','utf8'),ctx);
 const {DG}=ctx;let count=0;
 function test(name,fn){fn();count++;console.log('PASS '+name);}
-function assess(answers={},mode='clinical',risks={}){return DG.evaluate({mode,answers,risks,meta:{}});}
+function assess(answers={},mode='clinical',risks={},workup={}){return DG.evaluate({mode,answers,risks,meta:{},workup});}
 const clear={acute:'no',neuro:'no',ill:'no',rapid:'no'};
 test('空白資料保留缺口，不能放行安全檢核或計算風險',()=>{const r=assess();assert.equal(r.gate,'incomplete');assert.equal(r.safetyMissing.length,4);assert.equal(r.riskKnown,0);assert.equal(r.riskPositive.length,0);assert.match(r.syndrome,/資料不足/);});
 test('任何急性警訊優先於其他已填資料',()=>{for(const k of ['acute','neuro','ill'])assert.equal(assess({...clear,[k]:'yes',rapid:'yes',memory:'yes',adBio:'yes'}).gate,'urgent');});
@@ -16,8 +16,16 @@ test('功能下降但客觀證據缺失，仍為疑似',()=>{const r=assess({...
 test('民眾模式不採用隱藏專業生物標記與認知資料',()=>{const r=assess({...clear,decline:'yes',independence:'no',objective:'yes',adBio:'yes'},'public');assert.ok(!r.syndrome.includes('可評估輕度'));assert.ok(!r.candidates.find(c=>c.id==='ad').support.some(s=>s.includes('核心生物')));});
 test('單一 AD 生物標記不把全部症狀歸因 AD',()=>{const r=assess({...clear,adBio:'yes'});assert.match(r.candidates.find(c=>c.id==='ad').note,/不能將所有症狀/);assert.match(r.syndrome,/資料不足/);});
 test('只有血管危險因子不觸發血管病因線索',()=>{const r=assess(clear,'clinical',{hypertension:{status:'yes'}});assert.equal(r.candidates.find(c=>c.id==='vascular').active,false);});
-test('血管与退化性線索可並存，不排他分類',()=>{const r=assess({...clear,stroke:'yes',memory:'yes',gradual:'yes'});assert.equal(r.mixed,true);assert.ok(r.candidates.find(c=>c.id==='ad').active);assert.ok(r.candidates.find(c=>c.id==='vascular').active);});
+test('血管與退化性線索可並存，不排他分類',()=>{const r=assess({...clear,stroke:'yes',memory:'yes',gradual:'yes'});assert.equal(r.mixed,true);assert.ok(r.candidates.find(c=>c.id==='ad').active);assert.ok(r.candidates.find(c=>c.id==='vascular').active);});
 test('三項 bvFTD 線索缺少進展與排除，不能輸出正式診斷',()=>{const r=assess({...clear,apathy:'yes',empathy:'yes',oral:'yes'});const c=r.candidates.find(c=>c.id==='ftd');assert.match(c.note,/3\/6/);assert.ok(c.missing.length>0);assert.ok(!Object.hasOwn(c,'diagnosis'));});
 test('PPA 與 iNPH 線索不確定病理或直接確診',()=>{const r=assess({...clear,languageFirst:'yes',gait:'yes',urine:'yes'});assert.match(r.candidates.find(c=>c.id==='ppa').note,/不同病理/);assert.match(r.candidates.find(c=>c.id==='nph').note,/不足以確診/);});
 test('14項不重複且兩項新增正確；未知未列為陰性',()=>{assert.equal(DG.risks.length,14);assert.equal(new Set(DG.risks.map(r=>r.id)).size,14);assert.equal(DG.risks.filter(r=>r.badge).length,2);const r=assess(clear,'clinical',{ldl:{status:'yes'},vision:{status:'unknown'},diabetes:{status:'no'}});assert.equal(r.riskKnown,2);assert.equal(r.riskPositive.length,1);assert.equal(r.riskPositive[0].id,'ldl');});
+test('客觀障礙已證實但下降未記錄，不能顯示資料不足或未回報下降',()=>{const r=assess({...clear,objective:'yes',independence:'no'});assert.match(r.syndrome,/MCI/);assert.match(r.syndrome,/尚未記錄較以往的下降/);assert.ok(!r.syndrome.includes('資料不足'));});
+test('主觀下降、客觀評估陰性且功能保留，描述為 SCD 而非 MCI',()=>{const r=assess({...clear,decline:'yes',objective:'no',independence:'no'});assert.match(r.syndrome,/SCD/);assert.ok(!r.syndrome.includes('MCI'));});
+test('只有漸進惡化不觸發 AD 線索，也不形成混合病因',()=>{const r=assess({...clear,gradual:'yes',stroke:'yes'});assert.equal(r.candidates.find(c=>c.id==='ad').active,false);assert.equal(r.mixed,false);assert.match(r.candidates.find(c=>c.id==='ad').note,/共通表現/);});
+test('PD 時序：回答「無」不列為 DLB 反證；回答「有」提示較符合 PDD',()=>{const no=assess({...clear,parkinson:'yes',pdBefore:'no'}).candidates.find(c=>c.id==='dlb');assert.ok(!no.absent.some(x=>x.includes('巴金森病')));assert.ok(!no.missing.some(x=>x.includes('超過一年')));const yesR=assess({...clear,parkinson:'yes',pdBefore:'yes'});assert.match(yesR.candidates.find(c=>c.id==='dlb').note,/較符合 PDD/);assert.ok(yesR.candidates.find(c=>c.id==='pdd').active);});
+test('只有排尿症狀不觸發 iNPH 線索',()=>{const c=assess({...clear,urine:'yes'}).candidates.find(c=>c.id==='nph');assert.equal(c.active,false);assert.deepEqual(c.support.length,1);assert.equal(assess({...clear,gait:'yes'}).candidates.find(c=>c.id==='nph').active,true);});
+test('民眾模式的專業待補項目標示需醫療人員評估',()=>{const r=assess({...clear,decline:'yes'},'public');assert.ok(r.cognitionMissing.some(x=>x.includes('客觀')&&x.includes('由醫療人員評估')));assert.ok(!assess({...clear,decline:'yes'}).cognitionMissing.some(x=>x.includes('由醫療人員評估')));});
+test('可逆因素檢查：醫療模式列出異常與未做核心項目；民眾模式不採用',()=>{assert.equal(DG.workup.filter(w=>w.core).length,5);const r=assess(clear,'clinical',{}, {b12:'abnormal',thyroid:'normal',syphilis:'pending'});assert.deepEqual([...r.workupAbnormal],[DG.workup.find(w=>w.id==='b12').name]);assert.equal(r.workupPending.length,3);assert.ok(!r.workupPending.some(x=>x.includes('梅毒')));const p=assess(clear,'public',{}, {b12:'abnormal'});assert.equal(p.workup.length,0);assert.equal(p.workupAbnormal.length,0);});
+test('來源索引有效：每項候選與檢查均指向存在的來源',()=>{const r=assess(clear);for(const c of r.candidates)assert.ok(DG.sources[c.source],c.id);for(const w of DG.workup)assert.ok(DG.sources[w.source],w.id);assert.match(DG.sources[10][1],/wnl\.56\.9\.1143/);});
 console.log(`${count} clinical rule checks passed`);
