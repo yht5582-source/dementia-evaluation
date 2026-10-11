@@ -5,8 +5,8 @@ import shutil
 
 ROOT = Path(__file__).resolve().parent.parent
 html = (ROOT / 'index.html').read_text(encoding='utf-8')
-portable = html.replace('<link rel="stylesheet" href="style.css">',
-                        '<style>' + (ROOT / 'style.css').read_text(encoding='utf-8') + '</style>')
+portable = re.sub(r'<link rel="stylesheet" href="style\.css(?:\?[^"]*)?">',
+                  lambda _: '<style>' + (ROOT / 'style.css').read_text(encoding='utf-8') + '</style>', html)
 portable = re.sub(r'<script defer src="[^"]+"></script>', '', portable)
 scripts = ''.join('<script>' + (ROOT / name).read_text(encoding='utf-8') + '</script>'
                   for name in ['data.js', 'engine.js', 'app.js'])
