@@ -26,7 +26,7 @@ DG.evaluate = function(state) {
   const support=keys.filter(yes).map(label), missing=required.filter(unknown).map(label), absent=required.filter(k=>a[k]==='no').map(label);
   candidates.push({id,name,support,missing,absent,next,source,note,active:specific.some(yes)});
  }
- add('ad','阿茲海默症（AD）',['gradual','memory','adBio'],['decline','objective','independence','alternatives','gradual','adBio'],'評估情節記憶、完整症候群及結構影像；需要病因確認且會改變處置時，轉介專科討論適當生物標記。',2,yes('adBio')?'已輸入專科確認的生物標記異常；仍需核實方法、效能及共病，不能將所有症狀歸因於 AD。':'臨床記憶型表現不等同 AD 生物學診斷；不建議對無症狀者進行常規 AD 生物標記診斷篩檢。'+(yes('gradual')&&!yes('memory')&&!yes('adBio')?' 只有「漸進惡化」屬各類退化性疾病共通表現，未單獨列為 AD 線索。':''),['memory','adBio']);
+ add('ad','阿茲海默症（AD）',['gradual','memory','adBio'],['decline','objective','independence','alternatives','gradual','adBio'],'評估情節記憶、完整症候群及結構影像；需要病因確認且會改變處置時，轉介專科討論適當生物標記。',2,yes('adBio')?'已輸入專科確認的生物標記異常；仍需核實方法、效能及共病，不能將所有症狀歸因於 AD。':'臨床記憶型表現不等同 AD 生物學診斷；除研究外，不建議對無症狀者做 AD 生物標記診斷檢測。'+(yes('gradual')&&!yes('memory')&&!yes('adBio')?' 只有「漸進惡化」屬各類退化性疾病共通表現，未單獨列為 AD 線索。':''),['memory','adBio']);
  const dlbKeys=['fluctuation','hallucination','rbd','parkinson'];
  const dlbCount=dlbKeys.filter(yes).length;
  add('dlb','路易氏體失智症（DLB）',[...dlbKeys,'dlbBio'],['decline','objective','independence','alternatives',...dlbKeys,'dlbBio'],'神經科確認核心特徵、排除譫妄與藥物影響，必要時安排 DAT、PSG 或其他合適檢查。',3,`已回報 ${dlbCount}/4 項核心特徵線索，非診斷分數。需先成立失智症；共識中兩項核心特徵或一項核心加指標性生物標記可支持 probable DLB，仍需完整排除與時間關係審查。疑似 DLB 需留意抗精神病藥敏感性，勿自行調藥。`+(yes('pdBefore')?' 已回報巴金森病確診超過一年後才出現認知症狀：依一年慣例較符合 PDD，而非 DLB。':''));

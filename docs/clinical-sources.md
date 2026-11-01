@@ -32,5 +32,7 @@
 ## 示範病例、考題與心智圖（1.2，查核日期 2026-11-01）
 
 - 原文核對：NICE NG97 Recommendations 第 1.2、1.5.15、1.6、1.7 節；McKeith 2017（PMC5496518）；Rascovsky 2011（PMC3170532，Table 3）；Gorno-Tempini 2011（PMC3059138）；Nakajima 2021（PMC7905302）；Sachdev 2014（PMC4139434，Table 4）。
-- McKeith 2017 的 probable／possible DLB 計數規則在 Table 1（圖片），本次由內文交叉確認「1 項核心加指標性生物標記」與「僅生物標記為 possible」；「≥2 項核心」與「僅 1 項核心為 possible」沿用既有內容，未從表格原文讀取。
-- 本次無法取得全文（出版社拒絕自動讀取）：Alzheimer's Association 2024、2025，Lancet 2024。相關題目與分支只重述本站 1.0 版已整理的內容，上線臨床使用前宜再對原文。
+- McKeith 2017 Table 1（原圖）：probable 為 ≥2 項核心，或 1 項核心加 ≥1 項指標性生物標記；possible 為僅 1 項核心，或僅有指標性生物標記；probable 不可只憑生物標記；失智早於或與巴金森症狀同時出現診斷 DLB。
+- Alzheimer's Association 2024（PMC11350039）：異常 Core 1 足以確立 AD 診斷，但不排除共病理；研究以外建議不對認知未受損者做診斷檢測；非逐步臨床流程指引。
+- Alzheimer's Association 2025（PMC12306682）：對象為專科中有客觀認知障礙且已完成完整評估者；triage ≥90%／≥75%（陰性可高機率排除，陽性需確認），取代 PET／CSF 兩者 ≥90%；明文不含主觀認知下降、篩檢及非專科情境；許多市售檢測未達門檻。
+- Lancet 2024：僅讀到摘要與官方資訊圖（TL_Dementia_Risk_Factors_2024 v3），全文需登入。14 項、2024 新增兩項、生命階段分類均相符；各因子 5/7/7/3/3/2/2/2/2/1/1/5/3/2%，合計 45%。「人口可歸因比例」的方法細節未從全文核對。
