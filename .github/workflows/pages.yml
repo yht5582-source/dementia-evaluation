@@ -20,6 +20,7 @@ jobs:
         run: |
           node --check data.js
           node --check engine.js
+          node --check teach.js
           node --check app.js
       - name: Verify clinical rule behavior
         run: node tests/rules.test.cjs
